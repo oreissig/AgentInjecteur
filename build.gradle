@@ -1,0 +1,28 @@
+group = 'com.github.oreissig'
+version = '0.1.0'
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'javax.inject:javax.inject:1'
+    compile 'org.javassist:javassist:3.20.0-GA'
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.7'
+}
+
+jar {
+    manifest {
+        def mainClass = 'com.github.oreissig.agentinjecteur.agent.AgentMain'
+        attributes("Premain-Class": mainClass,
+                   "Agent-Class": mainClass)
+    }
+}
+
+test {
+    jvmArgs "-javaagent:$jar.archivePath"
+}
