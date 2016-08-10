@@ -21,6 +21,8 @@ class InjectionTransformer {
         try {
             CtClass clazz = pool.makeClass(new ByteArrayInputStream(classfileBuffer));
 
+            // TODO @Assisted for constructor params
+            // TODO overwrite @FactoryMethod annotated static methods with getter
             List<CtField> injectTargets = Arrays.stream(clazz.getDeclaredFields())
                     .filter(f -> f.hasAnnotation(Inject.class)).collect(toList());
             if (injectTargets.isEmpty()) {
@@ -40,7 +42,9 @@ class InjectionTransformer {
         try {
             for (CtField f : injectTargets) {
                 // make field final
+                // TODO check that there is no write to an injected field
                 f.setModifiers(f.getModifiers() | FINAL);
+                // TODO replace @javax.inject.Inject by proprietary @Injected annotation to avoid double injection
 
                 String typeName = f.getType().getName();
                 String init = "(" + typeName + ") " + membersInjector + ".get(" + typeName + ".class)";

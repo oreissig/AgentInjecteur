@@ -4,6 +4,7 @@ import javax.inject.Provider;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO implement different contexts (spring, guice, ...)
 public class MembersInjector {
 
     private static final Map<Class, Provider<?>> providers = new HashMap<>();

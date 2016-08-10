@@ -19,6 +19,8 @@ class AgentSpec extends Specification {
         foo.inject0
         !foo.dontInject
     }
+
+    // TODO test that transformation is idempotent and enable retransform
 }
 
 class TestFoo extends TestBar {
