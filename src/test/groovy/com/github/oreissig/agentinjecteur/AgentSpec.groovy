@@ -8,7 +8,7 @@ import javax.inject.Inject
 class AgentSpec extends Specification {
     def "agent is loaded"() {
         given:
-        MembersInjector.register(String, "foo");
+        MembersInjector.register(String, "foo")
 
         when:
         def foo = new TestFoo()
@@ -25,14 +25,14 @@ class AgentSpec extends Specification {
 
 class TestFoo extends TestBar {
     @Inject
-    String inject1;
+    String inject1
     @Inject
-    String inject2;
+    String inject2
 
-    String dontInject;
+    String dontInject
 }
 
 class TestBar {
     @Inject
-    String inject0;
+    String inject0
 }
