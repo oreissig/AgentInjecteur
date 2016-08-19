@@ -17,24 +17,19 @@ class InjectionTransformer {
     private final ClassPool pool = ClassPool.getDefault();
     private final String membersInjector = MembersInjector.class.getName();
 
-    public byte[] transform(String className, byte[] classfileBuffer) throws IOException {
-        try {
-            CtClass clazz = pool.makeClass(new ByteArrayInputStream(classfileBuffer));
+    public byte[] transform(String className, byte[] classfileBuffer) throws IOException, CannotCompileException {
+        CtClass clazz = pool.makeClass(new ByteArrayInputStream(classfileBuffer));
 
-            // TODO @Assisted for constructor params
-            // TODO overwrite @FactoryMethod annotated static methods with getter
-            List<CtField> injectTargets = Arrays.stream(clazz.getDeclaredFields())
-                    .filter(f -> f.hasAnnotation(Inject.class)).collect(toList());
-            if (injectTargets.isEmpty()) {
-                // do nothing
-                return classfileBuffer;
-            } else {
-                injectMembers(clazz, injectTargets);
-                return clazz.toBytecode();
-            }
-        } catch (IOException | CannotCompileException e) {
-            new Exception("Could not inject " + className, e).printStackTrace();
+        // TODO @Assisted for constructor params
+        // TODO overwrite @FactoryMethod annotated static methods with getter
+        List<CtField> injectTargets = Arrays.stream(clazz.getDeclaredFields())
+                .filter(f -> f.hasAnnotation(Inject.class)).collect(toList());
+        if (injectTargets.isEmpty()) {
+            // do nothing
             return classfileBuffer;
+        } else {
+            injectMembers(clazz, injectTargets);
+            return clazz.toBytecode();
         }
     }
 

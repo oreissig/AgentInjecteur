@@ -1,7 +1,8 @@
 package com.github.oreissig.agentinjecteur.agent;
 
+import javassist.CannotCompileException;
+
 import java.io.IOException;
-import java.lang.instrument.IllegalClassFormatException;
 import java.lang.instrument.Instrumentation;
 
 public class AgentMain {
@@ -19,8 +20,9 @@ public class AgentMain {
         inst.addTransformer((loader, className, classBeingRedefined, protectionDomain, classfileBuffer) -> {
             try {
                 return transformer.transform(className, classfileBuffer);
-            } catch (IOException e) {
-                throw new IllegalClassFormatException(e.getMessage());
+            } catch (IOException | CannotCompileException e) {
+                new Exception("Could not inject " + className, e).printStackTrace();
+                return classfileBuffer;
             }
         });
     }
