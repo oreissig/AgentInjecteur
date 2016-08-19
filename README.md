@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/oreissig/AgentInjecteur.svg?branch=master)](https://travis-ci.org/oreissig/AgentInjecteur)
 
-Agent Injecteur is a special agent, that infiltrates the JVM and performs dependency injection as a stealth operation.
+Agent Injecteur is a special [agent](https://docs.oracle.com/javase/8/docs/api/java/lang/instrument/package-summary.html), that infiltrates the JVM and performs dependency injection as a stealth operation.
 
 Usual dependency injection frameworks like [Spring](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/beans.html) or [Guice](https://github.com/google/guice/) operate on POJOs, i. e. they do not require framework-specific stuff in your code, that participates in dependency injection. However they require you to use the framework for creating instances of "managed" objects, mandating framework-specific code yet again.
 ```java
