@@ -1,7 +1,11 @@
 package com.github.oreissig.agentinjecteur.agent;
 
+import com.github.oreissig.agentinjecteur.rt.Injected;
 import com.github.oreissig.agentinjecteur.rt.MembersInjector;
 import javassist.*;
+import javassist.bytecode.AnnotationsAttribute;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.annotation.Annotation;
 import javassist.expr.ExprEditor;
 import javassist.expr.FieldAccess;
 
@@ -19,6 +23,8 @@ class InjectionTransformer {
 
     private final ClassPool pool = ClassPool.getDefault();
     private final String membersInjector = MembersInjector.class.getName();
+    private final String injectedAnno = Injected.class.getName();
+    private final String injectAnno = Inject.class.getName();
 
     public byte[] transform(String className, byte[] classfileBuffer) throws IOException, CannotCompileException {
         CtClass clazz = pool.makeClass(new ByteArrayInputStream(classfileBuffer));
@@ -40,7 +46,7 @@ class InjectionTransformer {
         try {
             for (CtField f : injectTargets) {
                 makeFinal(f);
-                // TODO replace @javax.inject.Inject by proprietary @Injected annotation to avoid double injection
+                markInjected(f);
 
                 String typeName = f.getType().getName();
                 String init = "(" + typeName + ") " + membersInjector + ".get(" + typeName + ".class)";
@@ -69,6 +75,22 @@ class InjectionTransformer {
             });
             // make field final
             f.setModifiers(f.getModifiers() | FINAL);
+        }
+    }
+
+    private void markInjected(CtField f) throws CannotCompileException {
+        // replace @javax.inject.Inject by proprietary @Injected annotation to avoid double injection
+        ConstPool constpool = f.getDeclaringClass().getClassFile().getConstPool();
+        AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
+        Annotation injected = new Annotation(injectedAnno, constpool);
+
+        Annotation[] annotations = attr.getAnnotations();
+        for (int i = 0; i < annotations.length; i++) {
+            if (annotations[i].getTypeName().equals(injectAnno)) {
+                annotations[i] = injected;
+                attr.setAnnotations(annotations);
+                return;
+            }
         }
     }
 }
